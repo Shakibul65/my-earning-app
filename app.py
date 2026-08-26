@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Models
+# Database Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -34,6 +34,7 @@ class Ad(db.Model):
     url = db.Column(db.String(500), nullable=False)
     reward = db.Column(db.Float, default=0.05)
     duration_seconds = db.Column(db.Integer, default=15)
+    active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class AdView(db.Model):
@@ -46,7 +47,7 @@ class Withdrawal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    method = db.Column(db.String(50), nullable=False) # bKash, Nagad, Rocket
+    method = db.Column(db.String(50), nullable=False)
     account_number = db.Column(db.String(50), nullable=False)
     status = db.Column(db.String(20), default='Pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -77,7 +78,7 @@ def register():
             referrer = User.query.filter_by(referral_code=referral_input).first()
             if referrer:
                 referrer_id = referrer.id
-                referrer.balance += 2.00 # রেফার করার বোনাস ৳২.০০
+                referrer.balance += 2.00
 
         new_user = User(
             username=username, 
@@ -92,7 +93,7 @@ def register():
 
         db.session.add(new_user)
         db.session.commit()
-        flash('নিবন্ধন সফল হয়েছে! রেফার করার জন্য আপনাকে ধন্যবাদ।', 'success')
+        flash('নিবন্ধন সফল হয়েছে!', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html', ref_code=ref_code)
@@ -135,7 +136,7 @@ def dashboard():
     can_claim_bonus = user.last_bonus_date != today
 
     viewed_ad_ids = [v.ad_id for v in AdView.query.filter_by(user_id=user.id, view_date=today).all()]
-    available_ads = Ad.query.filter(~Ad.id.in_(viewed_ad_ids)).all() if viewed_ad_ids else Ad.query.all()
+    available_ads = Ad.query.filter(Ad.active == True, ~Ad.id.in_(viewed_ad_ids)).all() if viewed_ad_ids else Ad.query.filter_by(active=True).all()
     transactions = Withdrawal.query.filter_by(user_id=user.id).order_by(Withdrawal.created_at.desc()).limit(5).all()
     total_referrals = User.query.filter_by(referred_by=user.id).count()
 
@@ -158,12 +159,10 @@ def claim_bonus():
     today = date.today()
 
     if user.last_bonus_date != today:
-        user.balance += 1.00 # ডেইলি বোনাস ৳১.০০
+        user.balance += 1.00
         user.last_bonus_date = today
         db.session.commit()
-        flash('অভিনন্দন! আপনি আজকের ৳১.০০ ডেইলি বোনাস পেয়েছেন!', 'success')
-    else:
-        flash('আজকের বোনাস আপনি ইতিমধ্যেই ক্লেইম করেছেন!', 'warning')
+        flash('আজকের ৳১.০০ বোনাস যোগ হয়েছে!', 'success')
 
     return redirect(url_for('dashboard'))
 
@@ -221,6 +220,38 @@ def withdraw():
             return redirect(url_for('dashboard'))
 
     return render_template('withdraw.html', user=user)
+
+# Admin Routes
+@app.route('/admin/ads', methods=['GET', 'POST'])
+def admin_ads():
+    if not session.get('is_admin'):
+        flash('আপনার অ্যাডমিন অ্যাক্সেস নেই!', 'danger')
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        title = request.form.get('title')
+        url = request.form.get('url')
+        reward = float(request.form.get('reward', 0.01))
+        duration = int(request.form.get('duration_seconds', 15))
+
+        new_ad = Ad(title=title, url=url, reward=reward, duration_seconds=duration)
+        db.session.add(new_ad)
+        db.session.commit()
+        flash('নতুন বিজ্ঞাপন যোগ করা হয়েছে!', 'success')
+
+    ads = Ad.query.order_by(Ad.created_at.desc()).all()
+    return render_template('admin_ads.html', ads=ads)
+
+@app.route('/admin/toggle_ad/<int:ad_id>', methods=['POST'])
+def admin_toggle_ad(ad_id):
+    if not session.get('is_admin'):
+        return redirect(url_for('dashboard'))
+
+    ad = Ad.query.get_or_404(ad_id)
+    ad.active = not ad.active
+    db.session.commit()
+    flash('বিজ্ঞাপনের স্ট্যাটাস পরিবর্তন করা হয়েছে!', 'info')
+    return redirect(url_for('admin_ads'))
 
 with app.app_context():
     db.create_all()
