@@ -156,6 +156,10 @@ def claim_bonus():
         return redirect(url_for('login'))
 
     user = User.query.get(user_id)
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
+
     today = date.today()
 
     if user.last_bonus_date != today:
@@ -173,6 +177,10 @@ def view_ad(ad_id):
         return redirect(url_for('login'))
 
     user = User.query.get(user_id)
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
+
     ad = Ad.query.get_or_404(ad_id)
     today = date.today()
 
@@ -196,6 +204,9 @@ def withdraw():
         return redirect(url_for('login'))
 
     user = User.query.get(user_id)
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
         amount = float(request.form.get('amount', 0))
