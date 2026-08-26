@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}বিজ্ঞাপন দেখুন - EarnClick{% endblock %}
+{% block content %}
+<div class="ad-view-card">
+    <h2>{{ ad.title }}</h2>
+
+    <div class="ad-frame-wrapper">
+        <iframe src="{{ ad.url }}" class="ad-frame" id="adFrame"></iframe>
+    </div>
+
+    <div class="timer-box">
+        <div class="timer-circle">
+            <span id="timerText">{{ ad.duration_seconds }}</span>
+        </div>
+        <p id="timerLabel">অপেক্ষা করুন... বিজ্ঞাপন দেখতে থাকুন</p>
+    </div>
+
+    <button id="claimBtn" class="btn btn-primary btn-full" disabled>
+        অপেক্ষা করুন...
+    </button>
+
+    <a href="{{ url_for('dashboard') }}" class="back-link">← ড্যাশবোর্ডে ফিরে যান</a>
+</div>
+
+<script>
+    const duration = {{ ad.duration_seconds }};
+    const adId = {{ ad.id }};
+    let remaining = duration;
+
+    const timerText = document.getElementById('timerText');
+    const timerLabel = document.getElementById('timerLabel');
+    const claimBtn = document.getElementById('claimBtn');
+
+    const interval = setInterval(() => {
+        remaining -= 1;
+        timerText.textContent = remaining;
+
+        if (remaining <= 0) {
+            clearInterval(interval);
+            timerLabel.textContent = 'সম্পন্ন! এখন রিওয়ার্ড দাবি করুন।';
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'রিওয়ার্ড দাবি করুন';
+        }
+    }, 1000);
+
+    claimBtn.addEventListener('click', async () => {
+        claimBtn.disabled = true;
+        claimBtn.textContent = 'প্রসেস হচ্ছে...';
+
+        try {
+            const res = await fetch(`/ad/${adId}/complete`, { method: 'POST' });
+            const data = await res.json();
+
+            if (data.success) {
+                timerLabel.textContent = `✅ ৳${data.reward} যোগ হয়েছে! নতুন ব্যালেন্স: ৳${data.new_balance}`;
+                claimBtn.textContent = 'ড্যাশবোর্ডে যাচ্ছি...';
+                setTimeout(() => { window.location.href = "{{ url_for('dashboard') }}"; }, 1500);
+            } else {
+                timerLabel.textContent = data.message || 'একটি সমস্যা হয়েছে।';
+                claimBtn.disabled = false;
+                claimBtn.textContent = 'আবার চেষ্টা করুন';
+            }
+        } catch (err) {
+            timerLabel.textContent = 'নেটওয়ার্ক সমস্যা, আবার চেষ্টা করুন।';
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'আবার চেষ্টা করুন';
+        }
+    });
+</script>
+{% endblock %}
