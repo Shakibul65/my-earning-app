@@ -4,41 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EarnClick{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="{{ url_for('index') }}" class="logo">EarnClick</a>
+        <div class="container nav-container">
+            <a href="/" class="brand-logo">Earn<span>Click</span></a>
             <div class="nav-links">
-                {% if session.get('user_id') %}
-                    <a href="{{ url_for('dashboard') }}">ড্যাশবোর্ড</a>
-                    <a href="{{ url_for('withdraw') }}">উত্তোলন</a>
-                    {% set u = get_current_user() %}
-                    {% if u and u.is_admin %}
-                        <a href="{{ url_for('admin_dashboard') }}">অ্যাডমিন</a>
-                    {% endif %}
-                    <a href="{{ url_for('logout') }}">লগআউট</a>
+                {% if session.user_id %}
+                    <a href="/dashboard" class="nav-link">ড্যাশবোর্ড</a>
+                    <a href="/withdraw" class="nav-link">উত্তোলন</a>
+                    <a href="/logout" class="btn-logout">লগআউট</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}">লগইন</a>
-                    <a href="{{ url_for('register') }}" class="btn-nav">রেজিস্টার</a>
+                    <a href="/login" class="nav-link">লগইন</a>
+                    <a href="/register" class="btn-primary">রেজিস্টার</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="flash flash-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
+    <main class="main-content container">
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 EarnClick. সর্বস্বত্ব সংরক্ষিত।</p>
+        </div>
+    </footer>
 </body>
 </html>
