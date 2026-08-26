@@ -254,3 +254,76 @@ body {
     text-decoration: none;
     font-weight: 600;
 }
+/* Bonus & Referral UI */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.btn-bonus {
+    background: #fdcb6e;
+    color: #2d3436;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.btn-bonus:hover {
+    transform: scale(1.05);
+}
+
+.bonus-claimed {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.ref-box input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px dashed var(--primary);
+    background: #f0edff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-align: center;
+    margin: 0.8rem 0;
+}
+
+.ads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.ad-card {
+    background: white;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.badge.pending { background: #ffeaa7; color: #d63031; }
+.badge.approved { background: #55efc4; color: #00875a; }
+.badge.rejected { background: #ff7675; color: white; }
+
+.form-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
