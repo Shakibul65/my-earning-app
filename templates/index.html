@@ -1,1 +1,27 @@
-a
+{% extends 'base.html' %}
+{% block title %}EarnClick - বিজ্ঞাপন দেখে আয় করুন{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>বিজ্ঞাপন দেখে আয় করুন</h1>
+    <p>সহজ কাজ, নিশ্চিত আয়। প্রতিদিন বিজ্ঞাপন দেখুন এবং টাকা জমা করুন।</p>
+    <div class="hero-buttons">
+        <a href="{{ url_for('register') }}" class="btn btn-primary">এখনই শুরু করুন</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary">লগইন</a>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <h3>📺 বিজ্ঞাপন দেখুন</h3>
+        <p>প্রতিদিন নতুন বিজ্ঞাপন দেখে সহজেই আয় করুন।</p>
+    </div>
+    <div class="feature-card">
+        <h3>💰 তাৎক্ষণিক ব্যালেন্স</h3>
+        <p>প্রতিটি বিজ্ঞাপন দেখা শেষ হলেই সাথে সাথে ব্যালেন্স যোগ হবে।</p>
+    </div>
+    <div class="feature-card">
+        <h3>🏦 সহজ উত্তোলন</h3>
+        <p>bKash, Nagad বা ব্যাংকের মাধ্যমে সহজে টাকা উত্তোলন করুন।</p>
+    </div>
+</div>
+{% endblock %}

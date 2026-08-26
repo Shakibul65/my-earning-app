@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}উত্তোলন - EarnClick{% endblock %}
+{% block content %}
+
+<div class="balance-card">
+    <div>
+        <span class="balance-label">তোমার ব্যালেন্স</span>
+        <h2 class="balance-amount">৳ {{ '%.4f'|format(user.balance) }}</h2>
+    </div>
+</div>
+
+<div class="form-card">
+    <h2>উত্তোলনের অনুরোধ করুন</h2>
+    <p class="hint">সর্বনিম্ন উত্তোলন: ৳{{ min_withdraw }}</p>
+    <form method="POST">
+        <label>পরিমাণ (৳)</label>
+        <input type="number" name="amount" step="0.01" min="{{ min_withdraw }}" max="{{ user.balance }}" required>
+
+        <label>পেমেন্ট মেথড</label>
+        <select name="method" required>
+            <option value="">নির্বাচন করুন</option>
+            <option value="bKash">bKash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="Rocket">Rocket</option>
+            <option value="Bank">ব্যাংক ট্রান্সফার</option>
+        </select>
+
+        <label>অ্যাকাউন্ট নাম্বার / তথ্য</label>
+        <input type="text" name="account_info" placeholder="যেমন: 017XXXXXXXX" required>
+
+        <button type="submit" class="btn btn-primary btn-full">অনুরোধ জমা দিন</button>
+    </form>
+</div>
+
+<h3 class="section-title">উত্তোলনের ইতিহাস</h3>
+{% if history %}
+<table class="tx-table">
+    <thead><tr><th>তারিখ</th><th>পরিমাণ</th><th>মেথড</th><th>অবস্থা</th></tr></thead>
+    <tbody>
+    {% for h in history %}
+        <tr>
+            <td>{{ h.created_at.strftime('%d-%m-%Y %H:%M') }}</td>
+            <td>৳{{ '%.2f'|format(h.amount) }}</td>
+            <td>{{ h.method }}</td>
+            <td>
+                {% if h.status == 'pending' %}<span class="badge badge-pending">অপেক্ষমান</span>
+                {% elif h.status == 'approved' %}<span class="badge badge-approved">অনুমোদিত</span>
+                {% else %}<span class="badge badge-rejected">প্রত্যাখ্যাত</span>{% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="empty-state">এখনও কোনো উত্তোলন অনুরোধ নেই।</p>
+{% endif %}
+
+{% endblock %}

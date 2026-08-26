@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}লগইন - EarnClick{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h2>লগইন করুন</h2>
+    <form method="POST">
+        <label>ইউজারনেম</label>
+        <input type="text" name="username" required>
+
+        <label>পাসওয়ার্ড</label>
+        <input type="password" name="password" required>
+
+        <button type="submit" class="btn btn-primary btn-full">লগইন</button>
+    </form>
+    <p class="form-footer">নতুন ইউজার? <a href="{{ url_for('register') }}">রেজিস্টার করুন</a></p>
+</div>
+{% endblock %}

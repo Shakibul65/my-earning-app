@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}অ্যাডমিন - EarnClick{% endblock %}
+{% block content %}
+<h2 class="section-title">অ্যাডমিন ড্যাশবোর্ড</h2>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-value">{{ total_users }}</span>
+        <span class="stat-label">মোট ইউজার</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ total_ads }}</span>
+        <span class="stat-label">মোট বিজ্ঞাপন</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">{{ pending_withdrawals }}</span>
+        <span class="stat-label">অপেক্ষমান উত্তোলন</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-value">৳{{ '%.2f'|format(total_paid_out) }}</span>
+        <span class="stat-label">মোট পরিশোধিত</span>
+    </div>
+</div>
+
+<div class="admin-links">
+    <a href="{{ url_for('admin_ads') }}" class="btn btn-secondary">বিজ্ঞাপন ব্যবস্থাপনা</a>
+    <a href="{{ url_for('admin_withdrawals') }}" class="btn btn-secondary">উত্তোলন অনুরোধ</a>
+</div>
+{% endblock %}

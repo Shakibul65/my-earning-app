@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}বিজ্ঞাপন ব্যবস্থাপনা - EarnClick{% endblock %}
+{% block content %}
+<h2 class="section-title">বিজ্ঞাপন ব্যবস্থাপনা</h2>
+
+<div class="form-card">
+    <h3>নতুন বিজ্ঞাপন যোগ করুন</h3>
+    <form method="POST">
+        <label>শিরোনাম</label>
+        <input type="text" name="title" required>
+
+        <label>URL</label>
+        <input type="url" name="url" required>
+
+        <label>রিওয়ার্ড (৳)</label>
+        <input type="number" step="0.001" name="reward" value="0.01" required>
+
+        <label>সময়কাল (সেকেন্ড)</label>
+        <input type="number" name="duration_seconds" value="15" required>
+
+        <button type="submit" class="btn btn-primary btn-full">যোগ করুন</button>
+    </form>
+</div>
+
+<h3 class="section-title">সব বিজ্ঞাপন</h3>
+<table class="tx-table">
+    <thead><tr><th>শিরোনাম</th><th>রিওয়ার্ড</th><th>সময়</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr></thead>
+    <tbody>
+    {% for ad in ads %}
+        <tr>
+            <td>{{ ad.title }}</td>
+            <td>৳{{ '%.4f'|format(ad.reward) }}</td>
+            <td>{{ ad.duration_seconds }}s</td>
+            <td>{% if ad.active %}<span class="badge badge-approved">সক্রিয়</span>{% else %}<span class="badge badge-rejected">নিষ্ক্রিয়</span>{% endif %}</td>
+            <td>
+                <form method="POST" action="{{ url_for('admin_toggle_ad', ad_id=ad.id) }}">
+                    <button type="submit" class="btn-small">{{ 'বন্ধ করুন' if ad.active else 'চালু করুন' }}</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
